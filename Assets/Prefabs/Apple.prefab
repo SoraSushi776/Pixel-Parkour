@@ -161,7 +161,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95fc6f914d69ac1488ac34bd29bfa24a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 100
   collectionName: "\u82F9\u679C"
+  score: 100
   bonusSpeed: 6
   bonusSpeedHoldingTime: 3
+  destroyAfterEnter: 0
+  eatSound: {fileID: 8300000, guid: f468048ed181c428abb190da6ec16f59, type: 3}

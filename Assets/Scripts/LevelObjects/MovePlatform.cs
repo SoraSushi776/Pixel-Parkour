@@ -1,71 +1,74 @@
 using UnityEngine;
 
-public class MovePlatform : MonoBehaviour
+namespace LevelObjects
 {
-    public Transform StartPoint;
-    public Transform EndPoint;
-    public float MoveSpeed = 1f;
-    public float WaitTime = 2f; // 新增：等待时间
-
-    private Vector2 startPos;
-    private Vector2 endPos;
-    private Vector2 movePos;
-    private float waitTimer = 0f; // 新增：等待计时器
-    private bool isWaiting = false; // 新增：是否正在等待
-
-    void Start()
+    public class MovePlatform : MonoBehaviour
     {
-        startPos = StartPoint.position;
-        endPos = EndPoint.position;
+        public Transform startPoint;
+        public Transform endPoint;
+        public float moveSpeed = 1f;
+        public float waitTime = 2f;
 
-        movePos = startPos;
+        private Vector2 _startPos;
+        private Vector2 _endPos;
+        private Vector2 _movePos;
+        private float _waitTimer;
+        private bool _isWaiting;
 
-        Destroy(StartPoint.gameObject);
-        Destroy(EndPoint.gameObject);
-    }
-
-    void Update()
-    {
-        if (isWaiting)
+        void Start()
         {
-            waitTimer += Time.deltaTime;
-            if (waitTimer >= WaitTime)
+            _startPos = startPoint.position;
+            _endPos = endPoint.position;
+
+            _movePos = _startPos;
+
+            Destroy(startPoint.gameObject);
+            Destroy(endPoint.gameObject);
+        }
+
+        void Update()
+        {
+            if (_isWaiting)
             {
-                isWaiting = false;
-                waitTimer = 0f;
+                _waitTimer += Time.deltaTime;
+                if (_waitTimer >= waitTime)
+                {
+                    _isWaiting = false;
+                    _waitTimer = 0f;
+                }
+                return;
             }
-            return;
-        }
-        else
-        {
-            transform.position = Vector2.MoveTowards(transform.position, movePos, MoveSpeed * Time.deltaTime);
+            else
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _movePos, moveSpeed * Time.deltaTime);
+            }
+
+            if (Vector2.Distance(transform.position, _endPos) < 0.01f)
+            {
+                _movePos = _startPos;
+                _isWaiting = true;
+            }
+            else if (Vector2.Distance(transform.position, _startPos) < 0.01f)
+            {
+                _movePos = _endPos;
+                _isWaiting = true;
+            }
         }
 
-        if (Vector2.Distance(transform.position, endPos) < 0.1f)
+        void OnTriggerEnter2D(Collider2D other)
         {
-            movePos = startPos;
-            isWaiting = true;
+            if (other.CompareTag("Player"))
+            {
+                other.transform.SetParent(transform);
+            }
         }
-        else if (Vector2.Distance(transform.position, startPos) < 0.1f)
-        {
-            movePos = endPos;
-            isWaiting = true;
-        }
-    }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Player")
+        void OnTriggerExit2D(Collider2D other)
         {
-            other.transform.SetParent(transform);
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.tag == "Player")
-        {
-            other.transform.SetParent(null);
+            if (other.CompareTag("Player"))
+            {
+                other.transform.SetParent(null);
+            }
         }
     }
 }

@@ -1,18 +1,32 @@
+using GameCore;
 using UnityEngine;
 
-public class Apple : Collections
+namespace LevelObjects
 {
-    // 吃苹果加速
-    
-    [SerializeField] private float bonusSpeed = 6f;
-    [SerializeField] private float bonusSpeedHoldingTime = 3f;
-
-    void OnTriggerEnter2D(Collider2D other)
+    public class Apple : MonoBehaviour
     {
-        if (other.tag == "Player")
+        // 吃苹果加速
+        [SerializeField] private string collectionName = "Apple";
+        [SerializeField] private int score = 100;
+        [SerializeField] private float bonusSpeed = 6f;
+        [SerializeField] private float bonusSpeedHoldingTime = 3f;
+        [SerializeField] private bool destroyAfterEnter;
+        [SerializeField] private AudioClip eatSound;
+
+        void OnTriggerEnter2D(Collider2D other)
         {
-            Player player = other.GetComponent<Player>();
-            player.AddSpeed(bonusSpeed, bonusSpeedHoldingTime);
+            if (other.CompareTag("Player"))
+            {
+                LevelManager.CurrentScore += score;
+                
+                Player player = other.GetComponent<Player>();
+                player.AddSpeed(bonusSpeed, bonusSpeedHoldingTime);
+            
+                if (destroyAfterEnter)
+                    Destroy(gameObject);
+                
+                Player.PlayAudioClip(eatSound);
+            }
         }
     }
 }

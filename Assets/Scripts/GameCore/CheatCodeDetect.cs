@@ -1,92 +1,94 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class CheatCodeDetect : MonoBehaviour
+namespace GameCore
 {
-    [Serializable]
-    class CheatCodeSet
+    public class CheatCodeDetect : MonoBehaviour
     {
-        public KeyCode[] needPress;
-        public UnityEvent action;
-    }
-
-    [SerializeField] private CheatCodeSet[] cheatCodeSets;
-    [SerializeField] private float keyPressInterval = 0.5f;
-
-    private class CheatCodeState
-    {
-        public int currentIndex = 0;
-        public float lastKeyPressTime = 0f;
-        public bool isActive = false;
-    }
-
-    private Dictionary<CheatCodeSet, CheatCodeState> cheatStates = new Dictionary<CheatCodeSet, CheatCodeState>();
-
-    void Start()
-    {
-        foreach (var cheatCodeSet in cheatCodeSets)
+        [Serializable]
+        class CheatCodeSet
         {
-            cheatStates[cheatCodeSet] = new CheatCodeState();
+            public KeyCode[] needPress;
+            public UnityEvent action;
         }
-    }
 
-    void Update()
-    {
-        foreach (var cheatCodeSet in cheatCodeSets)
+        [SerializeField] private CheatCodeSet[] cheatCodeSets;
+        [SerializeField] private float keyPressInterval = 0.5f;
+
+        private class CheatCodeState
         {
-            var state = cheatStates[cheatCodeSet];
-            KeyCode expectedKey = cheatCodeSet.needPress[state.currentIndex];
+            public int currentIndex = 0;
+            public float lastKeyPressTime = 0f;
+            public bool isActive = false;
+        }
 
-            if (state.isActive && Time.time - state.lastKeyPressTime > keyPressInterval)
+        private Dictionary<CheatCodeSet, CheatCodeState> cheatStates = new Dictionary<CheatCodeSet, CheatCodeState>();
+
+        void Start()
+        {
+            foreach (var cheatCodeSet in cheatCodeSets)
             {
-                ResetState(state);
-                continue;
+                cheatStates[cheatCodeSet] = new CheatCodeState();
             }
+        }
 
-            if (Input.anyKeyDown)
+        void Update()
+        {
+            foreach (var cheatCodeSet in cheatCodeSets)
             {
-                bool pressedExpectedKey = Input.GetKeyDown(expectedKey);
-                bool pressedWrongKey = false;
+                var state = cheatStates[cheatCodeSet];
+                KeyCode expectedKey = cheatCodeSet.needPress[state.currentIndex];
 
-                foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-                {
-                    if (Input.GetKeyDown(key) && key != expectedKey)
-                    {
-                        pressedWrongKey = true;
-                        break;
-                    }
-                }
-
-                if (!pressedExpectedKey && pressedWrongKey && state.isActive)
+                if (state.isActive && Time.time - state.lastKeyPressTime > keyPressInterval)
                 {
                     ResetState(state);
                     continue;
                 }
 
-                if (pressedExpectedKey)
+                if (Input.anyKeyDown)
                 {
-                    state.currentIndex++;
-                    state.lastKeyPressTime = Time.time;
-                    state.isActive = true;
+                    bool pressedExpectedKey = Input.GetKeyDown(expectedKey);
+                    bool pressedWrongKey = false;
 
-                    if (state.currentIndex == cheatCodeSet.needPress.Length)
+                    foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
                     {
-                        Debug.Log($"作弊码输入成功: {string.Join(", ", cheatCodeSet.needPress)}");
-                        cheatCodeSet.action.Invoke();
+                        if (Input.GetKeyDown(key) && key != expectedKey)
+                        {
+                            pressedWrongKey = true;
+                            break;
+                        }
+                    }
+
+                    if (!pressedExpectedKey && pressedWrongKey && state.isActive)
+                    {
                         ResetState(state);
+                        continue;
+                    }
+
+                    if (pressedExpectedKey)
+                    {
+                        state.currentIndex++;
+                        state.lastKeyPressTime = Time.time;
+                        state.isActive = true;
+
+                        if (state.currentIndex == cheatCodeSet.needPress.Length)
+                        {
+                            Debug.Log($"作弊码输入成功: {string.Join(", ", cheatCodeSet.needPress)}");
+                            cheatCodeSet.action.Invoke();
+                            ResetState(state);
+                        }
                     }
                 }
             }
         }
-    }
 
-    private void ResetState(CheatCodeState state)
-    {
-        state.currentIndex = 0;
-        state.isActive = false;
-        state.lastKeyPressTime = 0f;
+        private void ResetState(CheatCodeState state)
+        {
+            state.currentIndex = 0;
+            state.isActive = false;
+            state.lastKeyPressTime = 0f;
+        }
     }
 }

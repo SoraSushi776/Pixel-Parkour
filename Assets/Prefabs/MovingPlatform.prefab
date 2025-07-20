@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e08a4dfaaabbc40b956d41aa07c3b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartPoint: {fileID: 1104963842363764269}
-  EndPoint: {fileID: 8967143241588549537}
-  MoveSpeed: 1
-  WaitTime: 2
+  startPoint: {fileID: 1104963842363764269}
+  endPoint: {fileID: 8967143241588549537}
+  moveSpeed: 1
+  waitTime: 2
