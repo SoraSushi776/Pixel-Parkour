@@ -6,7 +6,6 @@ namespace LevelObjects
     public class Apple : MonoBehaviour
     {
         // 吃苹果加速
-        [SerializeField] private string collectionName = "Apple";
         [SerializeField] private int score = 100;
         [SerializeField] private float bonusSpeed = 6f;
         [SerializeField] private float bonusSpeedHoldingTime = 3f;

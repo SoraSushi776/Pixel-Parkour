@@ -26,7 +26,7 @@ namespace GameUI
         {
             lifeDisplay.text = $"x {LevelManager.CurrentLife}";
             scoreDisplay.text = $"Score {LevelManager.CurrentScore}";
-            timeDisplay.text = $"Time {Mathf.RoundToInt(Player.LevelTime)}";
+            timeDisplay.text = $"Time {(Mathf.RoundToInt(Player.LevelTime) > 0 ? Mathf.RoundToInt(Player.LevelTime) : 0)}";
         }
 
         private void RefreshFpsDisplay()
