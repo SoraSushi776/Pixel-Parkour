@@ -1,5 +1,6 @@
 using GameCore;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GameUI
@@ -14,14 +15,25 @@ namespace GameUI
         public Text gameWinDisplay;
         public Text gameOverDisplay;
         
+        public GameObject moveLeftBtn;
+        public GameObject moveRightBtn;
+        public GameObject jumpBtn;
+        
         private void Start()
         {
             RefreshFpsDisplay();
             
             Player.OnGameWin.AddListener(() => gameWinDisplay.gameObject.SetActive(true));
             Player.OnGameOver.AddListener(() => gameOverDisplay.gameObject.SetActive(true));
+
+            if (!Application.isMobilePlatform)
+            {
+                moveLeftBtn.SetActive(false);
+                moveRightBtn.SetActive(false);
+                jumpBtn.SetActive(false);
+            }
         }
-        
+
         private void Update()
         {
             lifeDisplay.text = $"x {LevelManager.CurrentLife}";
@@ -32,7 +44,6 @@ namespace GameUI
         private void RefreshFpsDisplay()
         {
             fpsDisplay.text = $"FPS {Mathf.RoundToInt(1f / Time.deltaTime)}";
-            
             Invoke(nameof(RefreshFpsDisplay), 1f);
         }
     }

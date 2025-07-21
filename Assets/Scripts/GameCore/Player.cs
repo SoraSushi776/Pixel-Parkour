@@ -208,7 +208,7 @@ namespace GameCore
             StartPlayerAudioSource();
         }
 
-        void ResetRigidbody()
+        public void ResetRigidbody()
         {
             _rigidbody.simulated = true;
             _rigidbody.linearVelocity = Vector2.zero;
@@ -298,6 +298,57 @@ namespace GameCore
             if (canMove)
             {
                 _rigidbody.linearVelocity = new Vector2(horizontalInput * moveSpeed, _rigidbody.linearVelocity.y);
+            }
+        }
+        
+        public void SimulateMove(float horizontalInput)
+        {
+            // 处理转向
+            if (horizontalInput > 0)
+            {
+                _transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (horizontalInput < 0)
+            {
+                _transform.localScale = new Vector3(-1, 1, 1);
+            }
+            // 处理移动
+            bool canMove = true;
+            float rayDistance = 0.5f;
+            Vector2 rayOrigin = (Vector2)_transform.position + new Vector2(0, -0.4f);
+            LayerMask obstacleLayer = LayerMask.GetMask("Ground");
+            if (horizontalInput > 0)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right, rayDistance, obstacleLayer);
+                if (hit.collider)
+                {
+                    canMove = false;
+                }
+            }
+            
+            else if (horizontalInput < 0)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.left, rayDistance, obstacleLayer);
+                if (hit.collider)
+                {
+                    canMove = false;
+                }
+            }
+            
+            if (canMove)
+            {
+                _rigidbody.linearVelocity = new Vector2(horizontalInput * moveSpeed, _rigidbody.linearVelocity.y);
+            }
+        }
+
+        public void SimulateJump()
+        {
+            if (IsLandOnGround)
+            {
+                _rigidbody.linearVelocity = new Vector2(_rigidbody.linearVelocity.x, jumpPower);
+                OnCharacterJump.Invoke();
+                
+                PlayAudioClip(jumpSound);
             }
         }
 
