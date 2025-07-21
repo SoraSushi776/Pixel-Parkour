@@ -303,6 +303,8 @@ namespace GameCore
         
         public void SimulateMove(float horizontalInput)
         {
+            if (LevelManager.CurrentLevelState != LevelManager.LevelState.Playing) return;
+            
             // 处理转向
             if (horizontalInput > 0)
             {
