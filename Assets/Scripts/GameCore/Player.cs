@@ -177,7 +177,6 @@ namespace GameCore
             
             if (LevelManager.CanRevive)
             {
-                LevelManager.CurrentLife--;
                 Invoke(nameof(Respawn), deathSound.length + 1f);
             }
             else
@@ -188,6 +187,8 @@ namespace GameCore
 
         void Respawn()
         {
+            LevelManager.CurrentLife--;
+            
             if (LevelManager.LatestCheckPoint != null)
             {
                 Vector3 position = new Vector3(LevelManager.LatestCheckPoint.position.x, LevelManager.LatestCheckPoint.position.y + 1f, LevelManager.LatestCheckPoint.position.z);
