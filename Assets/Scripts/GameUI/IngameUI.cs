@@ -11,9 +11,15 @@ namespace GameUI
         public Text fpsDisplay;
         public Text timeDisplay;
         
+        public Text gameWinDisplay;
+        public Text gameOverDisplay;
+        
         private void Start()
         {
             RefreshFpsDisplay();
+            
+            Player.OnGameWin.AddListener(() => gameWinDisplay.gameObject.SetActive(true));
+            Player.OnGameOver.AddListener(() => gameOverDisplay.gameObject.SetActive(true));
         }
         
         private void Update()

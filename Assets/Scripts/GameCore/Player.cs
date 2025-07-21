@@ -41,10 +41,12 @@ namespace GameCore
         
         public static float LevelTime;
 
-        public UnityEvent onCharacterStartRunning = new UnityEvent();
-        public UnityEvent onCharacterStartIdle = new UnityEvent();
-        public UnityEvent onCharacterJump = new UnityEvent();
-        public UnityEvent onCharacterLand = new UnityEvent();
+        public static UnityEvent OnCharacterStartRunning = new UnityEvent();
+        public static UnityEvent OnCharacterStartIdle = new UnityEvent();
+        public static UnityEvent OnCharacterJump = new UnityEvent();
+        public static UnityEvent OnCharacterLand = new UnityEvent();
+        public static UnityEvent OnGameOver = new UnityEvent();
+        public static UnityEvent OnGameWin = new UnityEvent();
 
         private bool IsLandOnGround => Physics2D.Raycast(_transform.position, Vector2.down, detectRadius, groundLayer);
 
@@ -63,10 +65,10 @@ namespace GameCore
             _animator = GetComponent<Animator>();
 
             Instance = this;
-            onCharacterStartRunning = new UnityEvent();
-            onCharacterStartIdle = new UnityEvent();
-            onCharacterJump = new UnityEvent();
-            onCharacterLand = new UnityEvent();
+            OnCharacterStartRunning = new UnityEvent();
+            OnCharacterStartIdle = new UnityEvent();
+            OnCharacterJump = new UnityEvent();
+            OnCharacterLand = new UnityEvent();
             
             LevelTime = levelTotalSeconds;
             
@@ -106,6 +108,14 @@ namespace GameCore
             {
                 LevelManager.CurrentLevelState = LevelManager.LevelState.Waiting;
                 Death(false);
+            }
+
+            if (LevelManager.CurrentLevelState == LevelManager.LevelState.GameOver)
+            {
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                }
             }
         }
         
@@ -198,12 +208,14 @@ namespace GameCore
 
         void ResetRigidbody()
         {
-            _rigidbody.simulated = false;
+            _rigidbody.simulated = true;
             _rigidbody.linearVelocity = Vector2.zero;
         }
 
         void GameOver()
         {
+            OnGameOver?.Invoke();
+            
             StopPlayerAudioSource();
             LevelManager.CurrentLevelState = LevelManager.LevelState.GameOver;
             PlayAudioClip(gameOverSound);
@@ -211,6 +223,8 @@ namespace GameCore
 
         public void GameWin()
         {
+            OnGameWin?.Invoke();
+            
             ResetRigidbody();
             
             StopPlayerAudioSource();
@@ -281,7 +295,7 @@ namespace GameCore
             if (Input.GetButtonDown("Jump") && IsLandOnGround)
             {
                 _rigidbody.linearVelocity = new Vector2(_rigidbody.linearVelocity.x, jumpPower);
-                onCharacterJump.Invoke();
+                OnCharacterJump.Invoke();
                 
                 PlayAudioClip(jumpSound);
             }
@@ -289,8 +303,8 @@ namespace GameCore
 
         void AddSwitchAnimatorEvent()
         {
-            onCharacterStartRunning.AddListener(SwitchAnimatorToRunning);
-            onCharacterStartIdle.AddListener(SwitchAnimatorToIdle);
+            OnCharacterStartRunning.AddListener(SwitchAnimatorToRunning);
+            OnCharacterStartIdle.AddListener(SwitchAnimatorToIdle);
         }
 
         void SwitchAnimatorToRunning()
@@ -308,7 +322,7 @@ namespace GameCore
             bool currentIsLandOnGround = IsLandOnGround;
             if (!_wasLandOnGround && currentIsLandOnGround)
             {
-                onCharacterLand.Invoke();
+                OnCharacterLand.Invoke();
             }
             _wasLandOnGround = currentIsLandOnGround;
         }
@@ -318,11 +332,11 @@ namespace GameCore
             bool currentIsMoving = IsMoving;
             if (!_wasMoving && currentIsMoving)
             {
-                onCharacterStartRunning.Invoke();
+                OnCharacterStartRunning.Invoke();
             }
             else if (_wasMoving && !currentIsMoving)
             {
-                onCharacterStartIdle.Invoke();
+                OnCharacterStartIdle.Invoke();
             }
             _wasMoving = currentIsMoving;
         }
