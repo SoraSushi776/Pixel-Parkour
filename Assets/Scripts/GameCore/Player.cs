@@ -29,6 +29,7 @@ namespace GameCore
         [SerializeField] private AudioClip deathSound;
         [SerializeField] private AudioClip gameOverSound;
         [SerializeField] private AudioClip gameWinSound;
+        [SerializeField] private AudioClip dingSound;
         
         [SerializeField] private int levelTotalSeconds = 180;
         
@@ -214,22 +215,32 @@ namespace GameCore
 
         void GameOver()
         {
-            OnGameOver?.Invoke();
-            
             StopPlayerAudioSource();
             LevelManager.CurrentLevelState = LevelManager.LevelState.GameOver;
             PlayAudioClip(gameOverSound);
+            
+            OnGameOver?.Invoke();
         }
 
         public void GameWin()
         {
-            OnGameWin?.Invoke();
-            
             ResetRigidbody();
-            
-            StopPlayerAudioSource();
             LevelManager.CurrentLevelState = LevelManager.LevelState.Win;
-            PlayAudioClip(gameWinSound);
+            StopPlayerAudioSource();
+            
+            // 对计时器-1，每减去 1 秒，加分 100
+            if (LevelTime > 0)
+            {
+                LevelManager.CurrentScore += 100;
+                LevelTime -= 1;
+                PlayAudioClip(dingSound);
+                Invoke(nameof(GameWin), 0.1f);
+            }
+            else
+            {
+                PlayAudioClip(gameWinSound);
+                OnGameWin?.Invoke();
+            }
         }
 
         public void AddSpeed(float newSpeed, float holdingTime)

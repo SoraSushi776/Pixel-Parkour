@@ -30905,6 +30905,7 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 8082bb27a5b42714f91647c9c62ffb73, type: 3}
   gameOverSound: {fileID: 8300000, guid: 890eda764457a3942ac04d2ae9887f71, type: 3}
   gameWinSound: {fileID: 8300000, guid: d8634765cd9bdb8439e27539d5d86442, type: 3}
+  dingSound: {fileID: 8300000, guid: 7837cd175b997443688e1ffd7c0eb4bb, type: 3}
   levelTotalSeconds: 120
 --- !u!95 &1341021868
 Animator:
